@@ -32,7 +32,7 @@
   [request]
   (log/info {:msg    "Receive request to add new order"
              :params (:body-params request)})
-  (let [patient (api/create-patient request)]
+  (let [patient #p (api/create-patient request)]
     (if (r/success? patient)
       (-> patient r/get-data response/ok)
       (-> patient r/get-data response/bad-request))))
@@ -113,7 +113,7 @@
 
   (app-routes {:uri            "/api/patient"
                :request-method :put
-               :body-params    {:patient/id     #uuid"7e8ba101-0446-4483-b0bf-b3f9dfdeb894",
+               :body-params    {:patient/id     #uuid"f5e8f146-ccfd-4750-866a-0620baec9774",
                                 :patient/lname  "LNAME1",
                                 :patient/gender "FEMALE",}})
 
@@ -124,10 +124,10 @@
 
   (app-routes {:uri            "/api/patient"
                :request-method :post
-               :body-params    {:patient/fname            "John"
-                                :patient/mname            "MNAME1"
-                                :patient/lname            "LNAME1"
-                                :patient/address          "ADDRESS1"
+               :body-params    {:patient/fname            "FNAME"
+                                :patient/mname            "MNAME"
+                                :patient/lname            "LNAME"
+                                :patient/address          "ADDRESS"
                                 :patient/gender           "MALE"
                                 :patient/insurance-policy 123143141
                                 :patient/birth-date       (jt/local-date)}})

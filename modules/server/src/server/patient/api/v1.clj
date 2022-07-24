@@ -55,12 +55,18 @@
   "Creates a patient"
   [req]
   (let [req-data (:body-params req)]
-    (log/info {:msg "Create patient"})
-    (if-not (empty? (empty-required-fields req-data))
-      (do (log/error {:msg "Required fields must not be empty"})
-          (r/as-incorrect {:error/msg "Required fields must not be empty"}))
-      (do (log/info {:msg "Patient created"})
-          (r/as-success (db/create-patient req-data))))))
+    (try
+      (log/info {:msg "Create patient"})
+      (if-not (empty? (empty-required-fields req-data))
+        (do (log/error {:msg "Required fields must not be empty"})
+            (r/as-incorrect {:error/msg "Required fields must not be empty"}))
+        (do (log/info {:msg "Patient created"})
+            (r/as-success (db/create-patient req-data))))
+      (catch Exception e
+        (log/error {:msg    "User creation errors!"
+                    :params req-data
+                    :ex-msg (ex-message e)})
+        (r/as-error {:error/msg "User creation errors, check server logs"})))))
 
 
 (defn update-patient
@@ -84,7 +90,7 @@
 
       :else
       (let [values (-> req-data
-                       (dissoc :patient/id :patient/birth-date)
+                       (dissoc :patient/id)
                        (assoc :updated-at (sql/raw "current_timestamp")))
             res    (db/update-patient values patient-id)]
         (log/info {:msg "Patient updated"})
