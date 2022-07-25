@@ -46,28 +46,28 @@
 
 (defn create-patient
   [value]
-  (let [owner-id (UUID/randomUUID)
-        value*   (assoc value :patient/id owner-id)
-        query    (-> {:insert-into :health.patient
-                      :values      [value*]}
-                     sql/format)]
+  (let [patient-id (UUID/randomUUID)
+        value*     (assoc value :patient/id patient-id)
+        query      (-> {:insert-into :health.patient
+                        :values      [value*]}
+                       sql/format)]
     (db/execute-one! query)
-    (get-by-id owner-id)))
+    (get-by-id patient-id)))
 
 
 (defn update-patient
-  [value owner-id]
+  [value patient-id]
   (let [query (-> {:update :health.patient
                    :set    value
-                   :where  [:= :id owner-id]}
+                   :where  [:= :id patient-id]}
                   sql/format)]
     (db/execute-one! query)
-    (get-by-id owner-id)))
+    (get-by-id patient-id)))
 
 
 (defn delete-patient
-  [owner-id]
+  [patient-id]
   (let [query (-> {:delete-from :health.patient
-                   :where       [:= :id owner-id]}
+                   :where       [:= :id patient-id]}
                   sql/format)]
     (db/execute-one! query)))

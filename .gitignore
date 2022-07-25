@@ -1,3 +1,6 @@
 # Project exclude paths
 /target/
 /target/classes/
+.idea
+.lein-repl-history
+hsapp.iml

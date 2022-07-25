@@ -56,7 +56,7 @@
       (is (= res exp))))
 
   (testing "Errors when inserting data into the database are handled correctly"
-    (let [exp {:body #:error {:msg "User creation errors, check server logs"},
+    (let [exp {:body    #:error {:msg "User creation errors, check server logs"},
                :headers {},
                :status  400}
           res (sut/create-patient {:body-params {:patient/fname            "FNAME"
@@ -176,15 +176,15 @@
                                                       :patient/address          "ADDRESS"}])))]
       (let [exp {:headers {},
                  :status  200
-                 :body    [{:patient/address          "ADDRESS",
-                            :patient/birth_date       #inst "2022-07-23T21:00:00.000-00:00",
-                            :patient/created_at       #inst "2022-07-24T20:22:52.323-00:00",
-                            :patient/fname            "FNAME",
-                            :patient/gender           "FEMALE",
-                            :patient/id               #uuid "f5e8f146-ccfd-4750-866a-0620baec9774",
-                            :patient/insurance_policy "123143141",
-                            :patient/lname            "LNAME1",
-                            :patient/mname            "MNAME",
+                 :body    [{:patient/address          "ADDRESS"
+                            :patient/birth_date       #inst "2022-07-23T21:00:00.000-00:00"
+                            :patient/created_at       #inst "2022-07-24T20:22:52.323-00:00"
+                            :patient/fname            "FNAME"
+                            :patient/gender           "FEMALE"
+                            :patient/id               #uuid "f5e8f146-ccfd-4750-866a-0620baec9774"
+                            :patient/insurance_policy "123143141"
+                            :patient/lname            "LNAME1"
+                            :patient/mname            "MNAME"
                             :patient/updated_at       #inst "2022-07-24T20:23:14.536-00:00"}]}
             res (sut/update-patient {:body-params {:patient/id    #uuid"f5e8f146-ccfd-4750-866a-0620baec9774"
                                                    :patient/lname "LNAME1"}})]
@@ -207,10 +207,10 @@
         (is (= res exp)))))
 
   (testing "Patient with non-existent ID cannot be deleted correct error returned"
-    (with-redefs [db/get-by-id (constantly "some-value")
+    (with-redefs [db/get-by-id      (constantly "some-value")
                   db/delete-patient (constantly nil)]
-      (let [exp {:body {:msg "Patient with id f5e8f146-ccfd-4750-866a-0620baec9774 deleted"}
+      (let [exp {:body    {:msg "Patient with id f5e8f146-ccfd-4750-866a-0620baec9774 deleted"}
                  :headers {}
-                 :status 200}
+                 :status  200}
             res (sut/delete-patient {:body-params {:patient/id #uuid "f5e8f146-ccfd-4750-866a-0620baec9774"}})]
         (is (= res exp))))))

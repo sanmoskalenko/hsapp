@@ -13,11 +13,9 @@
         migrate-config (:migrate db-config)]
     (migratus/init migrate-config)))
 
+
 (defn migrate-table []
   (let [connection     (jdbc/get-connection (:main-db ctx))
         db-config      (assoc-in ctx [:migrate :db :connection] connection)
         migrate-config (:migrate db-config)]
     (migratus/migrate migrate-config)))
-
-
-
