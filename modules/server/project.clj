@@ -40,7 +40,7 @@
                  [cambium/cambium.logback.core "0.4.5"]
                  ]
 
-  :main server.core
+  :main health.core
 
   :resource-paths ["resources" "target/resources"]
 
@@ -52,9 +52,9 @@
                                       [hashp "0.2.1"]]
                        :injections   [(require 'hashp.core)]}
 
-             :uberjar {:aot            [server.core]
+             :uberjar {:aot            [health.core]
                        :jvm-opts       ["-Dclojure.compiler.direct-linking=true"]
                        :uberjar-name   "testapp.jar"
                        :resource-paths ["env/config"]}}
 
-  :repl-options {:init-ns server.core})
+  :repl-options {:init-ns health.core})

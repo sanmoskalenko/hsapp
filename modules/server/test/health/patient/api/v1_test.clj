@@ -1,7 +1,7 @@
-(ns server.patient.api.v1-test
+(ns health.patient.api.v1-test
   (:require
     [clojure.test :refer :all]
-    [server.patient.api.v1 :as sut]))
+    [health.patient.api.v1 :as sut]))
 
 
 (deftest ^:unit empty-required-fields-test

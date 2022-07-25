@@ -1,8 +1,8 @@
-(ns server.api-test
+(ns health.api-test
   (:require
     [clojure.test :refer :all]
-    [server.api :as sut]
-    [server.patient.db :as db]
+    [health.api :as sut]
+    [health.patient.db :as db]
     [unifier.response :as r]))
 
 ;; TODO It would be nice to cover with integration tests, but is it worth it for a test case??
@@ -56,8 +56,8 @@
       (is (= res exp))))
 
   (testing "Errors when inserting data into the database are handled correctly"
-    (let [exp {:body    #:error {:msg "User creation errors check server logs"}
-               :headers {}
+    (let [exp {:body #:error {:msg "User creation errors, check server logs"},
+               :headers {},
                :status  400}
           res (sut/create-patient {:body-params {:patient/fname            "FNAME"
                                                  :patient/gender           "MALE"
