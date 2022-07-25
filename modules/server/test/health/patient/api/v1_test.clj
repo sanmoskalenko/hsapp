@@ -15,5 +15,5 @@
   (testing "Non empty values are returned correctly"
     (let [exp {:some-value2 "some-value"}
           res (#'sut/not-empty-fields {:some-value1 nil
-                                            :some-value2 "some-value"})]
+                                       :some-value2 "some-value"})]
       (is (= res exp)))))

@@ -106,6 +106,7 @@
           (.stop webserver)))
 
 (comment
+
   (require '[java-time :as jt])
 
   (app-routes {:uri            "/api/patients"
@@ -134,7 +135,7 @@
 
   (app-routes {:uri            "/api/patient"
                :request-method :delete
-               :body-params    {:patient/id #uuid"54a89501-9dd4-4179-9563-b7cae17c763c",}})
+               :body-params    {:patient/id #uuid"1db7abc7-d369-4ee6-8006-d86e3e3f422b"}})
 
   (app-routes {:uri            "/"
                :request-method :get})

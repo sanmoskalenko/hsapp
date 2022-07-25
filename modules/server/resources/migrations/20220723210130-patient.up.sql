@@ -12,7 +12,7 @@ create table if not exists health.patient
   );
 --;;
 
-comment on table health.patient is 'Policy holder accaunts';
+comment on table health.patient is 'Stores patient information';
 --;;
 
 create index on health.patient (id);

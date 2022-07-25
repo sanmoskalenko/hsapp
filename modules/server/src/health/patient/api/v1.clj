@@ -98,7 +98,7 @@
 
 
 (defn delete-patient
-  "Deleted policy owner by id"
+  "Deleted patient by id"
   [req]
   (let [req-data   (:body-params req)
         patient-id (:patient/id req-data)]
