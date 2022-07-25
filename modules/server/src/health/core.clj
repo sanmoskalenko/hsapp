@@ -1,10 +1,10 @@
-(ns server.core
+(ns health.core
   (:require
     [mount.core :as mount]
-    [server.dao.pg :refer [ds]]
-    [server.api :refer [webserver]]
-    [server.config :refer [ctx]]
-    [server.dao.magrations :as migrations]
+    [health.dao.pg :refer [ds]]
+    [health.api :refer [webserver]]
+    [health.config :refer [ctx]]
+    [health.dao.magrations :as migrations]
     [clojure.tools.logging :as log])
   (:gen-class))
 

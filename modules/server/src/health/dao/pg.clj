@@ -1,8 +1,8 @@
-(ns server.dao.pg
+(ns health.dao.pg
   (:require
     [next.jdbc :as jdbc]
     [mount.core :refer [defstate]]
-    [server.config :refer [ctx]]
+    [health.config :refer [ctx]]
     [clojure.tools.logging :as log]))
 
 

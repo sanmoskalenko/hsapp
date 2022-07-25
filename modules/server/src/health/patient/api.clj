@@ -1,6 +1,6 @@
-(ns server.patient.api
+(ns health.patient.api
   (:require
-    [server.patient.api.v1 :as v1]))
+    [health.patient.api.v1 :as v1]))
 
 
 (defn list-patient []

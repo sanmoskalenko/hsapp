@@ -1,7 +1,7 @@
-(ns server.dao.magrations
+(ns health.dao.magrations
   (:require
-    [server.dao.pg :refer [ds]]
-    [server.config :refer [ctx]]
+    [health.dao.pg :refer [ds]]
+    [health.config :refer [ctx]]
     [migratus.core :as migratus]
     [next.jdbc :as jdbc]))
 

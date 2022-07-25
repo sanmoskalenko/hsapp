@@ -1,8 +1,8 @@
-(ns server.api-test
+(ns health.api-test
   (:require
     [clojure.test :refer :all]
-    [server.api :as sut]
-    [server.patient.db :as db]
+    [health.api :as sut]
+    [health.patient.db :as db]
     [unifier.response :as r]))
 
 ;; TODO It would be nice to cover with integration tests, but is it worth it for a test case??
@@ -56,8 +56,8 @@
       (is (= res exp))))
 
   (testing "Errors when inserting data into the database are handled correctly"
-    (let [exp {:body    #:error {:msg "User creation errors check server logs"}
-               :headers {}
+    (let [exp {:body #:error {:msg "User creation errors, check server logs"},
+               :headers {},
                :status  400}
           res (sut/create-patient {:body-params {:patient/fname            "FNAME"
                                                  :patient/gender           "MALE"
@@ -151,16 +151,18 @@
       (is (= res exp))))
 
   (testing "If an empty field is passed, then the update is not possible"
-    (let [exp {:body    #:error {:msg "Required fields must not be empty"}
-               :headers {}
-               :status  404}
-          res (sut/update-patient {:body-params {:patient/id     #uuid "20259864-b35e-4dfc-94ae-6845fc955a6b"
-                                                 :patient/fname  "FNAME"
-                                                 :patient/gender nil}})]
-      (is (= res exp))))
+    (with-redefs [db/get-by-id (constantly "some-id")]
+      (let [exp {:body    #:error {:msg "Required fields must not be empty"}
+                 :headers {}
+                 :status  404}
+            res (sut/update-patient {:body-params {:patient/id     #uuid "20259864-b35e-4dfc-94ae-6845fc955a6b"
+                                                   :patient/fname  "FNAME"
+                                                   :patient/gender nil}})]
+        (is (= res exp)))))
 
   (testing "If an empty field is passed, then the update is not possible"
-    (with-redefs [db/update-patient (constantly
+    (with-redefs [db/get-by-id      (constantly "some-id")
+                  db/update-patient (constantly
                                       (r/get-data (r/as-success
                                                     [{:patient/insurance_policy "123143141"
                                                       :patient/mname            "MNAME"

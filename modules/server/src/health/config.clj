@@ -1,4 +1,4 @@
-(ns server.config
+(ns health.config
   (:require
     [cprop.core :refer [load-config]]
     [mount.core :refer [defstate]]))

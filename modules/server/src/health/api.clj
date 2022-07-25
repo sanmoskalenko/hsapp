@@ -1,17 +1,17 @@
-(ns server.api
+(ns health.api
   (:require
     [compojure.core :refer :all]
     [compojure.route :as route]
     [ring.adapter.jetty :refer [run-jetty]]
     [ring.util.response :refer [redirect response]]
     [ring.util.http-response :as response]
-    [server.config :refer [ctx]]
+    [health.config :refer [ctx]]
     [mount.core :refer [defstate]]
     [muuntaja.middleware :as middleware]
     [ring.middleware.cors :refer [wrap-cors]]
     [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
     [unifier.response :as r]
-    [server.patient.api :as api]
+    [health.patient.api :as api]
     [selmer.parser :as parser]
     [clojure.tools.logging :as log]))
 
@@ -30,9 +30,9 @@
 (defn create-patient
   "Create patient request handler"
   [request]
-  (log/info {:msg    "Receive request to add new order"
+  (log/info {:msg    "Receive request to add new patient"
              :params (:body-params request)})
-  (let [patient #p (api/create-patient request)]
+  (let [patient (api/create-patient request)]
     (if (r/success? patient)
       (-> patient r/get-data response/ok)
       (-> patient r/get-data response/bad-request))))
@@ -40,7 +40,7 @@
 
 (defn list-patient []
   "Request handler for getting a list of patient"
-  (log/info {:msg "Receive request to list orders"})
+  (log/info {:msg "Receive request to list patients"})
   (let [patient (api/list-patient)]
     (if (r/success? patient)
       (-> patient r/get-data response/ok)

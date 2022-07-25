@@ -1,6 +1,6 @@
-(ns server.patient.api.v1
+(ns health.patient.api.v1
   (:require
-    [server.patient.db :as db]
+    [health.patient.db :as db]
     [honeysql.core :as sql]
     [unifier.response :as r]
     [clojure.tools.logging :as log]))

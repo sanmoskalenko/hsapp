@@ -1,8 +1,8 @@
-(ns server.patient.db
+(ns health.patient.db
   (:require
     [honeysql.core :as sql]
     [honeysql.helpers :as hsql]
-    [server.dao.pg :as db])
+    [health.dao.pg :as db])
   (:import
     (java.util
       UUID)))
