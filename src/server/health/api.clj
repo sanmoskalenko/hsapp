@@ -99,8 +99,6 @@
 
 (comment
 
-  (require '[java-time :as jt])
-
   (app-routes {:uri            "/api/patient"
                :request-method :get})
 

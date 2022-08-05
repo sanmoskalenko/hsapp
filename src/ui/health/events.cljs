@@ -46,10 +46,10 @@
     (assoc db :patient data)))
 
 
-(rf/reg-event-db
+(rf/reg-event-fx
   ::list-patient-failure
-  (fn [db [_ data]]
-    (assoc db :patient data)))
+  (fn [_ [_ data]]
+    (js/console.log :error/data data)))
 
 
 (rf/reg-event-fx
@@ -162,10 +162,11 @@
     (assoc db :patient data)))
 
 
-(rf/reg-event-db
+(rf/reg-event-fx
   ::search-patient-failure
-  (fn [db [_ data]]
-    (assoc db :patient data)))
+  (fn [_ [_ data]]
+    (js/console.log "Patient not found"
+                    :error/data data)))
 
 (rf/reg-event-fx
   ::search-patient
