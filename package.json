@@ -5,7 +5,7 @@
 		"watch": "npx shadow-cljs watch app",
 		"release": "npx shadow-cljs release app",
 		"clean": "rm -rf node_modules",
-		"start": "npm install && npx shadow-cljs release app",
+		"start": "npm install --save antd && npm run watch",
 		"install": "npm install --save antd",
 		"deps": "npm run clean && npm install --save antd",
 		"build-report": "npx shadow-cljs run shadow.cljs.build-report app target/build-report.html"

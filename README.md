@@ -1,10 +1,16 @@
 # hsapp
 
-A Clojure library designed to ... well, that part is up to you.
+Demo application written in Clojure.
 
 ## Usage
 
-FIXME
+To start the application for the first time, you need to run the following command:
+
+    npm run start && lein run
+
+## Description
+
+Application after launch is available on `localhost:3000`
 
 ## License
 
@@ -19,4 +25,4 @@ Licenses when the conditions for such availability set forth in the Eclipse
 Public License, v. 2.0 are satisfied: GNU General Public License as published by
 the Free Software Foundation, either version 2 of the License, or (at your
 option) any later version, with the GNU Classpath Exception which is available
-at https://www.gnu.org/software/classpath/license.html.
+at https://www.gnu.org/software/classpath/license.html._
