@@ -19,56 +19,57 @@
       prepared-where)))
 
 
-(defn list-all []
+(defn list-all
+  [ds]
   (let [query (-> {:select [:*]
                    :from   [:health.patient]}
                   sql/format)]
-    (db/execute! query)))
+    (db/execute! ds query)))
 
 
 (defn get-patient
-  [value]
+  [ds value]
   (let [where-params (prepare-where-for-search-patient value)
         init-query   {:select [:*]
                       :from   [:health.patient]}
         merge-query  (hsql/merge-where init-query where-params)
         query        (sql/format merge-query)]
-    (db/execute! query)))
+    (db/execute! ds query)))
 
 
 (defn get-by-id
-  [id]
+  [ds id]
   (let [query (-> {:select [:*]
                    :from   [:health.patient]
                    :where  [:= :id id]}
                   sql/format)]
-    (db/execute-one! query)))
+    (db/execute-one! ds query)))
 
 
 (defn create-patient
-  [value]
+  [ds value]
   (let [patient-id (UUID/randomUUID)
         value*     (assoc value :patient/id patient-id)
         query      (-> {:insert-into :health.patient
                         :values      [value*]}
                        sql/format)]
-    (db/execute-one! query)
-    (get-by-id patient-id)))
+    (db/execute-one! ds query)
+    (get-by-id ds patient-id)))
 
 
 (defn update-patient
-  [value patient-id]
+  [ds value patient-id]
   (let [query (-> {:update :health.patient
                    :set    value
                    :where  [:= :id patient-id]}
                   sql/format)]
-    (db/execute! query)
-    (get-by-id patient-id)))
+    (db/execute! ds query)
+    (get-by-id ds patient-id)))
 
 
 (defn delete-patient
-  [patient-id]
+  [ds patient-id]
   (let [query (-> {:delete-from :health.patient
                    :where       [:= :id patient-id]}
                   sql/format)]
-    (db/execute-one! query)))
+    (db/execute-one! ds query)))

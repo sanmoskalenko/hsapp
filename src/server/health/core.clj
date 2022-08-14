@@ -9,34 +9,35 @@
   (:gen-class))
 
 
-(defn stop []
-  (log/info {:msg "Stop hsapp"})
-  (let [status (mount/stop #'webserver #'ds #'ctx)]
+(defn stop! []
+  (let [_      (log/info {:msg "Stop hsapp"})
+        _      (migrations/migrations-down)
+        status (mount/stop #'webserver #'ds #'ctx)]
     (log/info {:status status})
     status))
 
 
-(defn start []
-  (log/info {:msg "Start hsapp"})
+(defn start! []
   (let [status (mount/start #'ctx #'ds #'webserver)
-        _      (.addShutdownHook (Runtime/getRuntime) (Thread. stop))]
-    (log/info {:status status})
+        _      (log/info {:msg "Start hsapp"})
+        _      (.addShutdownHook (Runtime/getRuntime) (Thread. stop!))
+        _      (migrations/migrations-up)
+        _      (log/info {:status status})]
     status))
 
-
-(defn restart []
-  (stop)
-  (start))
 
 (defn -main []
-  (start)
-  (migrations/migrate-schema)
-  (migrations/migrate-table))
+  (start!))
 
 
 (comment
 
   (-main)
-  (restart)
+
+  (defn restart []
+    (stop #'webserver #'ds #'ctx)
+    (start #'ctx #'ds #'webserver))
+
+
 
   )

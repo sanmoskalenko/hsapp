@@ -7,6 +7,8 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/clojurescript "1.11.57"]
 
+                 [matcho "0.1.0-RC6"]
+
                  [compojure "1.6.3"]
                  [clj-unifier "0.0.15"]
                  [selmer "1.12.52"]

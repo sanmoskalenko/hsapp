@@ -34,10 +34,10 @@
 
 (defn get-patient
   "Performs a search based on the given parameters"
-  [req]
+  [ds req]
   (let [req-data      (:params req)
         search-params (normalize-params req-data)
-        patient       (db/get-patient search-params)]
+        patient       (db/get-patient ds search-params)]
     (log/info {:msg "Search patient"})
     (if-not (empty? patient)
       (r/as-success patient)
@@ -47,9 +47,10 @@
 
 
 
-(defn list-patients []
+(defn list-patients
   "Returns a list of patients"
-  (let [patients (db/list-all)]
+  [ds]
+  (let [patients (db/list-all ds)]
     (if (empty? patients)
       (do (log/warn {:msg "Patient not-found"})
           (r/as-not-found {:error/msg "Patients not-found"}))
@@ -59,7 +60,7 @@
 
 (defn create-patient
   "Creates a patient"
-  [req]
+  [ds req]
   (let [req-data             (:body-params req)
         birth-date           (:birth-date req-data)
         normalize-birth-date (str->inst birth-date)
@@ -70,7 +71,7 @@
         (do (log/error {:msg "Required fields must not be empty"})
             (r/as-incorrect {:error/msg "Required fields must not be empty"}))
         (do (log/info {:msg "Patient created"})
-            (r/as-success (db/create-patient data))))
+            (r/as-success (db/create-patient ds data))))
       (catch Exception e
         (log/error {:msg    "User creation errors!"
                     :params req-data
@@ -79,7 +80,7 @@
 
 
 (defn update-patient
-  [req]
+  [ds req]
   (let [req-data   (:body-params req)
         patient-id (parse-uuid (or (:id req-data) ""))]
     (cond
@@ -88,7 +89,7 @@
         (log/info {:msg "Impossible update patient, because id is null"})
         (r/as-incorrect {:error/msg "Impossible update patient, because id is null"}))
 
-      (empty? (db/get-by-id patient-id))
+      (empty? (db/get-by-id ds patient-id))
       (do
         (log/info {:msg (format "Patient with id %s not found" patient-id)})
         (r/as-not-found {:error/msg (format "Patient with id %s not found" patient-id)}))
@@ -102,14 +103,14 @@
                        (dissoc :id)
                        (dissoc :created_at)
                        (assoc :updated-at (sql/raw "current_timestamp")))
-            res    (db/update-patient values patient-id)]
+            res    (db/update-patient ds values patient-id)]
         (log/info {:msg "Patient updated"})
         (r/as-success res)))))
 
 
 (defn delete-patient
   "Deleted patient by id"
-  [req]
+  [ds req]
   (let [req-data   (:body-params req)
         patient-id (parse-uuid (or req-data ""))]
     (cond
@@ -118,13 +119,13 @@
         (log/error {:msg "ID must not be null"})
         (r/as-incorrect {:error/msg "ID must not be null"}))
 
-      (empty? (db/get-by-id patient-id))
+      (empty? (db/get-by-id ds  patient-id))
       (do
         (log/error {:msg (format "Patient with id %s not found" patient-id)})
         (r/as-not-found {:error/msg (format "Patient with id %s not found" patient-id)}))
 
       :else
-      (let [_ (db/delete-patient patient-id)]
+      (let [_ (db/delete-patient ds patient-id)]
         (log/info {:msg (format "Patient with id %s deleted" patient-id)})
         (r/as-success {:msg (format "Patient with id %s deleted" patient-id)})))))
 

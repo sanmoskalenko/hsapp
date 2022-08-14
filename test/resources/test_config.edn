@@ -1,17 +1,7 @@
-{:webserver {:port              3000
-             :join?             false
-             :http?             true
-             :max-idle-time     200000
-             :ssl?              false
-             :max-threads       10
-             :min-threads       5
-             :send-date-header? true
-             :async?            true}
-
- :main-db   {:dbtype     "postgresql"
-             :dbname     "health_maindb"
+{:main-db   {:dbtype     "postgresql"
+             :dbname     "test_health_maindb"
              :host       "127.0.0.1"
-             :port       55009
+             :port       55010
              :user       "postgres"
              :password   "postgrespw"
              :ssl        false
@@ -23,7 +13,7 @@
              :init-in-transaction? false
              :migration-table-name "health.schema_migrations"
              :db                   {:dbtype   "postgres"
-                                    :dbname   "health_maindb"
+                                    :dbname   "test_health_maindb"
                                     :user     "postgres"
                                     :password "postgrespw"}}
  }

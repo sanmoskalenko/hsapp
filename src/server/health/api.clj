@@ -1,7 +1,7 @@
 (ns server.health.api
   (:require
     [compojure.core :refer :all]
-    [compojure.route :as route]
+    [ring.util.response :as util.response]
     [ring.adapter.jetty :refer [run-jetty]]
     [ring.util.http-response :as response]
     [mount.core :refer [defstate]]
@@ -11,29 +11,28 @@
     [unifier.response :as r]
     [server.health.patient.api :as api]
     [server.health.config :refer [ctx]]
-    [cambium.core :as log]
-    [selmer.parser :as parser]))
+    [server.health.dao.pg :refer [ds]]
+    [cambium.core :as log]))
 
-(parser/set-resource-path!  (clojure.java.io/resource "public"))
-
-(defn home-page []
-  (parser/render-file "index.html" {}))
+(def home-page
+  (util.response/redirect "/index.html"))
 
 (defn create-patient
   "Create patient request handler"
-  [request]
+  [ds request]
   (log/info {:msg    "Receive request to add new patient"
              :params (:body-params request)})
-  (let [patient (api/create-patient request)]
+  (let [patient (api/create-patient ds request)]
     (if (r/success? patient)
       (-> patient r/get-data response/ok)
       (-> patient r/get-data response/bad-request))))
 
 
-(defn list-patient []
+(defn list-patient
   "Request handler for getting a list of patient"
+  [ds]
   (log/info {:msg "Receive request to list patients"})
-  (let [patient (api/list-patient)]
+  (let [patient (api/list-patient ds)]
     (if (r/success? patient)
       (-> patient r/get-data response/ok)
       (-> patient r/get-data response/not-found))))
@@ -41,20 +40,19 @@
 
 (defn search-patient
   "Request handler for search patient"
-  [request]
+  [ds request]
   (log/info {:msg "Receive request to search patient"})
-  (let [patient (api/search-patient request)]
+  (let [patient (api/search-patient ds request)]
     (if (r/success? patient)
       (-> patient r/get-data response/ok)
       (-> patient r/get-data response/not-found))))
 
 
-
 (defn update-patient
   "Request handler for update of patient"
-  [request]
+  [ds request]
   (log/info {:msg "Receive request to update patient"})
-  (let [patient (api/update-patient request)]
+  (let [patient (api/update-patient ds request)]
     (if (r/success? patient)
       (-> patient r/get-data response/ok)
       (-> patient r/get-data response/not-found))))
@@ -62,23 +60,40 @@
 
 (defn delete-patient
   "Request handler for delete patient"
-  [request]
+  [ds request]
   (log/info {:msg "Receive request to delete patient"})
-  (let [res (api/delete-patient request)]
+  (let [res (api/delete-patient ds request)]
     (if (r/success? res)
       (-> res r/get-data response/ok)
       (-> res r/get-data response/not-found))))
 
 
-(defroutes app-routes
-  (GET "/" [] (home-page))
-  (context "/api" []
-   (GET "/patient" [] (list-patient))
-   (GET "/search" request (search-patient request))
-   (POST "/patient" request (create-patient request))
-   (PUT "/patient" request (update-patient request))
-   (DELETE "/patient" request (delete-patient request)))
-  (route/not-found (response/not-found)))
+;(defroutes app-routes
+;  (GET "/" [] (home-page))
+;  (context "/api" []
+;   (GET "/patient" [] (list-patient))
+;   (GET "/search" request (search-patient request))
+;   (POST "/patient" request (create-patient request))
+;   (PUT "/patient" request (update-patient request))
+;   (DELETE "/patient" request (delete-patient request)))
+;  (route/not-found (response/not-found)))
+
+
+;; Datasource was added into f for the tests
+(defn app-routes
+  ([request wrapper _]
+   (app-routes request wrapper _ ds))
+
+  ([request wrapper _ ds]
+   (let [{:keys [uri request-method]} request]
+     (case [request-method uri]
+       [:get "/"] (-> home-page wrapper)
+       [:get "/api/patient"] (-> (list-patient ds) wrapper)
+       [:get "/api/search"] (-> (search-patient ds request) wrapper)
+       [:put "/api/patient"] (-> (update-patient ds request) wrapper)
+       [:post "/api/patient"] (-> (create-patient ds request) wrapper)
+       [:delete "/api/patient"] (-> (delete-patient ds request) wrapper)
+       (-> (response/not-found) wrapper)))))
 
 
 (def app
@@ -96,35 +111,3 @@
   :stop (do
           (log/info {:msg "Stop webserver"})
           (.stop webserver)))
-
-(comment
-
-  (app-routes {:uri            "/api/patient"
-               :request-method :get})
-
-  (app-routes {:uri            "/api/patient"
-               :request-method :put
-               :body-params    {:id     "00c36cf6-27b2-4533-8224-eff92b906206",
-                                :lname  "LNAME5",
-                                :gender "FEMALE",}})
-
-  (app-routes {:uri            "/api/patient"
-               :request-method :post
-               :body-params    {:fname            "James"
-                                :mname            "Alice"
-                                :lname            "Greeen"
-                                :address          "61 9th Ave"
-                                :gender           "MALE"
-                                :insurance-policy 123143141
-                                :birth-date       "2022-08-04T09:33:02.545944000-00:00"}})
-
-  (app-routes {:uri            "/api/patient"
-               :request-method :delete
-               :body-params    "20259864-b35e-4dfc-94ae-6845fc955a6b"})
-
-  (app-routes {:uri            "/"
-               :request-method :get})
-
-
-
-  )

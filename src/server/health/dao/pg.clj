@@ -13,12 +13,11 @@
 
 
 (defn execute!
-  [query]
-  (with-open [connection (jdbc/get-connection (:main-db ctx))]
+  [ds query]
+  (with-open [connection (jdbc/get-connection ds)]
     (jdbc/execute! connection query)))
 
-
 (defn execute-one!
-  [query]
+  [ds query]
   (with-open [connection (jdbc/get-connection ds)]
     (jdbc/execute! connection query)))

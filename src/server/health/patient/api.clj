@@ -3,24 +3,25 @@
     [server.health.patient.api.v1 :as v1]))
 
 
-(defn list-patient []
-  (v1/list-patients))
+(defn list-patient
+  [ds]
+  (v1/list-patients ds))
 
 (defn search-patient
-  [req]
-  (v1/get-patient req))
+  [ds req]
+  (v1/get-patient ds req))
 
 (defn create-patient
-  [req]
-  (v1/create-patient req))
+  [ds req]
+  (v1/create-patient ds req))
 
 (defn update-patient
-  [req]
-  (v1/update-patient req))
+  [ds req]
+  (v1/update-patient ds req))
 
 (defn delete-patient
-  [req]
-  (v1/delete-patient req))
+  [ds req]
+  (v1/delete-patient ds req))
 
 
 

@@ -21,8 +21,7 @@
         prepared-data   (assoc data* :patient/birth-date birth-date)]
     (js/console.log :birth-date birth-date)
     (>evt [::event/create-patient prepared-data])
-    (>evt [::event/new-patient-modal false])
-    (>evt [::event/list-patient])))
+    (>evt [::event/new-patient-modal false])))
 
 
 

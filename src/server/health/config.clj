@@ -4,4 +4,4 @@
     [mount.core :refer [defstate]]))
 
 (defstate ctx :start
-          (load-config))
+  (load-config))
