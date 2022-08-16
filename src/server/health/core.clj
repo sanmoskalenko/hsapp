@@ -34,10 +34,4 @@
 
   (-main)
 
-  (defn restart []
-    (stop #'webserver #'ds #'ctx)
-    (start #'ctx #'ds #'webserver))
-
-
-
   )
