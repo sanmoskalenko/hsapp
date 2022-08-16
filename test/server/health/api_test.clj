@@ -3,12 +3,15 @@
     [clojure.test :refer [is use-fixtures deftest testing]]
     [server.health.api :as sut]
     [server.health.test.fixtures :as test.fixtures]
-    [matcho.core :refer [match]]))
+    [matcho.core :refer [match]]
+    [server.health.patient.db :as db]))
+
 
 (use-fixtures
-  :once test.fixtures/system-fixtures)
+  :each test.fixtures/system-fixtures)
 
-(deftest ^:integrations app-routes-test
+
+(deftest app-routes-test
   (let [ds             test.fixtures/ds
         jetty-async-fn (constantly nil)
         wrapper        (fn [x] x)]
@@ -16,26 +19,16 @@
     (testing "Request to the root of the site redirects to the correct path"
       (let [exp {:body "" :headers {"Location" "/index.html"} :status 302}
             res (sut/app-routes {:uri "/" :request-method :get} wrapper jetty-async-fn ds)]
-        (is (= res exp))))
+        (is (= res exp))))))
 
-    (testing "If the list of patients is empty the correct error is returned"
-      (let [exp {:body {:error/msg "Patients not-found"} :headers {} :status 404}
-            res (sut/app-routes {:uri "/api/patient" :request-method :get} wrapper jetty-async-fn ds)]
-        (is (= res exp))))
+
+(deftest create-patient-test
+  (let [ds             test.fixtures/ds
+        jetty-async-fn (constantly nil)
+        wrapper        (fn [x] x)]
 
     (testing "Request with data to create an patient is processed correctly"
-      (let [patient-first      (sut/app-routes {:uri            "/api/patient"
-                                                :request-method :post
-                                                :body-params    {:fname            "FNAME"
-                                                                 :mname            "MNAME"
-                                                                 :lname            "LNAME"
-                                                                 :address          "ADDRESS"
-                                                                 :gender           "MALE"
-                                                                 :insurance-policy 123143141
-                                                                 :birth-date       "2022-07-23T21:00:00.000-00:00"}}
-                                               wrapper jetty-async-fn ds)
-
-            patient-second     (sut/app-routes {:uri            "/api/patient"
+      (let [res     (sut/app-routes {:uri            "/api/patient"
                                                 :request-method :post
                                                 :body-params    {:fname            "Roy"
                                                                  :mname            "Philip"
@@ -45,34 +38,19 @@
                                                                  :insurance-policy "AA-364-2319"
                                                                  :birth-date       "2022-07-23T21:00:00.000-00:00"}}
                                                wrapper jetty-async-fn ds)
-
-
-            exp-patient-first  {:body    [#:patient{:address          "ADDRESS"
-                                                    :birth_date       #inst "2022-07-23T21:00:00.000000000-00:00"
-                                                    :created_at       (-> patient-first :body first :patient/created_at)
-                                                    :fname            "FNAME"
-                                                    :gender           "MALE"
-                                                    :id               (-> patient-first :body first :patient/id)
-                                                    :insurance_policy "123143141"
-                                                    :lname            "LNAME"
-                                                    :mname            "MNAME"
-                                                    :updated_at       (-> patient-first :body first :patient/updated_at)}]
-                                :headers {}
-                                :status  200}
-            exp-patient-second {:body    [#:patient{:address          "61 9th Ave Street"
+            exp {:body    [#:patient{:address          "61 9th Ave Street"
                                                     :birth_date       #inst "2022-07-23T21:00:00.000-00:00"
-                                                    :created_at       (-> patient-second :body first :patient/created_at)
+                                                    :created_at       (-> res :body first :patient/created_at)
                                                     :fname            "Roy"
                                                     :gender           "MALE"
-                                                    :id               (-> patient-second :body first :patient/id)
+                                                    :id               (-> res :body first :patient/id)
                                                     :insurance_policy "AA-364-2319"
                                                     :lname            "Jones"
                                                     :mname            "Philip"
-                                                    :updated_at       (-> patient-second :body first :patient/updated_at)}]
+                                                    :updated_at       (-> res :body first :patient/updated_at)}]
                                 :headers {}
                                 :status  200}]
-        (is (match patient-first exp-patient-first))
-        (is (match patient-second exp-patient-second))))
+        (is (match res exp))))
 
     (testing "It is not possible to create a user without the required fields filled in"
       (let [exp {:body    #:error {:msg "Required fields must not be empty"}
@@ -100,68 +78,13 @@
                                                          :gender           "MALE"
                                                          :insurance-policy "123143141"
                                                          :birth-date       "2022-07-23T21:00:00.000-00:00"}})]
-        (is (= res exp))))
+        (is (= res exp))))))
 
-    (testing "If there are patients in the database the list is returned correctly"
-      (let [res (sut/app-routes {:uri "/api/patient" :request-method :get} wrapper jetty-async-fn ds)
-            exp {:body    [#:patient{:address          "ADDRESS"
-                                     :birth_date       #inst "2022-07-23T21:00:00.000000000-00:00"
-                                     :created_at       inst?
-                                     :fname            "FNAME"
-                                     :gender           "MALE"
-                                     :id               uuid?
-                                     :insurance_policy "123143141"
-                                     :lname            "LNAME"
-                                     :mname            "MNAME"
-                                     :updated_at       inst?}
-                           #:patient{:address          "61 9th Ave Street"
-                                     :birth_date       #inst "2022-07-23T21:00:00.000000000-00:00"
-                                     :created_at       inst?
-                                     :fname            "Roy"
-                                     :gender           "MALE"
-                                     :id               uuid?
-                                     :insurance_policy "AA-364-2319"
-                                     :lname            "Jones"
-                                     :mname            "Philip"
-                                     :updated_at       inst?}]
-                 :headers {}
-                 :status  200}]
-        (is (match res exp))))
 
-    (testing "If the user is not found then the correct message is returned"
-      (let [exp {:body {:msg "Patient not found"} :headers {} :status 404}
-            res (sut/app-routes {:uri            "/api/search"
-                                 :request-method :get
-                                 :params         {:fname "NO-NAME"}}
-                                wrapper jetty-async-fn ds)]
-        (is (= res exp))))
-
-    (testing "If the search parameters are not set, the correct error is returned"
-      (let [exp {:body {:msg "Patient not found"} :headers {} :status 404}
-            res (sut/app-routes {:uri            "/api/search"
-                                 :request-method :get
-                                 :params         {}}
-                                wrapper jetty-async-fn ds)]
-        (is (= res exp))))
-
-    (testing "If the patient matches the search condition then it is returned correctly"
-      (let [res (sut/app-routes {:uri            "/api/search"
-                                 :request-method :get
-                                 :params         {:fname "FNAME"}}
-                                wrapper jetty-async-fn ds)
-            exp {:headers {}
-                 :status  200
-                 :body    [{:patient/address          "ADDRESS"
-                            :patient/birth_date       #inst "2022-07-23T21:00:00.000-00:00"
-                            :patient/created_at       inst?
-                            :patient/fname            "FNAME"
-                            :patient/gender           "MALE"
-                            :patient/id               uuid?
-                            :patient/insurance_policy "123143141"
-                            :patient/lname            "LNAME"
-                            :patient/mname            "MNAME"
-                            :patient/updated_at       inst?}]}]
-        (is (match res exp))))
+(deftest update-patient-test
+  (let [ds             test.fixtures/ds
+        jetty-async-fn (constantly nil)
+        wrapper        (fn [x] x)]
 
     (testing "If no patient ID is passed then a valid error is returned"
       (let [exp {:body    #:error {:msg "Impossible update patient, because id is null"}
@@ -187,48 +110,46 @@
                                 wrapper jetty-async-fn ds)]
         (is (= res exp))))
 
-    (testing "If the request is correct, the patient is updated correctly"
-      (let [patient (sut/app-routes {:uri            "/api/search"
-                                     :request-method :get
-                                     :params         {:fname "FNAME"}}
-                                    wrapper jetty-async-fn ds)
-            exp     {:body    [#:patient{:address          "ADDRESS"
-                                         :birth_date       #inst "2022-07-23T21:00:00.000000000-00:00"
-                                         :created_at       inst?
-                                         :fname            "FNAME"
-                                         :gender           "MALE"
-                                         :id               (-> patient :body first :patient/id)
-                                         :insurance_policy "987654321"
-                                         :lname            "LNAME"
-                                         :mname            "MNAME"
-                                         :updated_at       inst?}]
-                     :headers {}
-                     :status  200}
-            res     (sut/app-routes {:uri            "/api/patient"
-                                     :request-method :put
-                                     :body-params    {:id               (str (-> patient :body first :patient/id))
-                                                      :fname            "FNAME"
-                                                      :gender           "MALE"
-                                                      :insurance-policy 987654321}}
-                                    wrapper jetty-async-fn ds)]
-        (is (match res exp))))
-
     (testing "If an empty field is passed, then the update is not possible"
-      (let [patient (sut/app-routes {:uri            "/api/search"
-                                     :request-method :get
-                                     :params         {:fname "FNAME"}}
-                                    wrapper jetty-async-fn ds)
-            exp     {:body    #:error{:msg "Required fields must not be empty"}
+      (let [exp     {:body    #:error{:msg "Required fields must not be empty"}
                      :headers {}
                      :status  404}
             res     (sut/app-routes {:uri            "/api/patient"
                                      :request-method :put
-                                     :body-params    {:id               (str (-> patient :body first :patient/id))
+                                     :body-params    {:id               "692f57f9-0b01-47df-b928-46ce92b8ea83"
                                                       :fname            nil
                                                       :gender           "MALE"
                                                       :insurance-policy 987654321}}
                                     wrapper jetty-async-fn ds)]
         (is (= res exp))))
+
+    (testing "If the request is correct, the update occurs correctly"
+      (let [exp     {:body    [#:patient{:address          "160 Broadway"
+                                         :birth_date       inst?
+                                         :created_at       inst?
+                                         :fname            "TEST_NAME"
+                                         :gender           "MALE"
+                                         :id               #uuid "692f57f9-0b01-47df-b928-46ce92b8ea83"
+                                         :insurance_policy "987654321"
+                                         :lname            "Smith"
+                                         :mname            "Alice"
+                                         :updated_at       inst?}]
+                     :headers {}
+                     :status  200}
+            res     (sut/app-routes {:uri            "/api/patient"
+                                     :request-method :put
+                                     :body-params    {:id               "692f57f9-0b01-47df-b928-46ce92b8ea83"
+                                                      :fname            "TEST_NAME"
+                                                      :gender           "MALE"
+                                                      :insurance-policy 987654321}}
+                                    wrapper jetty-async-fn ds)]
+        (is (match res exp))))))
+
+
+(deftest delete-patient-test
+  (let [ds             test.fixtures/ds
+        jetty-async-fn (constantly nil)
+        wrapper        (fn [x] x)]
 
     (testing "If no patient ID is passed then a valid error is returned"
       (let [exp {:body    #:error {:msg "ID must not be null"}
@@ -249,17 +170,92 @@
                                 wrapper jetty-async-fn ds)]
         (is (= res exp))))
 
-
     (testing "A patient with an existing id is deleted correctly"
-      (let [patient (sut/app-routes {:uri            "/api/search"
-                                     :request-method :get
-                                     :params         {:fname "FNAME"}}
-                                    wrapper jetty-async-fn ds)
-            exp {:body    {:msg (format "Patient with id %s deleted" (str (-> patient :body first :patient/id)))}
+      (let [exp {:body    {:msg "Patient with id 692f57f9-0b01-47df-b928-46ce92b8ea83 deleted"}
                  :headers {}
                  :status  200}
             res (sut/app-routes {:uri            "/api/patient"
                                  :request-method :delete
-                                 :body-params    (str (-> patient :body first :patient/id))}
+                                 :body-params    "692f57f9-0b01-47df-b928-46ce92b8ea83"}
                                 wrapper jetty-async-fn ds)]
         (is (= res exp))))))
+
+
+(deftest search-patient-test
+  (let [ds             test.fixtures/ds
+        jetty-async-fn (constantly nil)
+        wrapper        (fn [x] x)]
+
+    (testing "If the user is not found then the correct message is returned"
+      (let [exp {:body {:msg "Patient not found"} :headers {} :status 404}
+            res (sut/app-routes {:uri            "/api/search"
+                                 :request-method :get
+                                 :params         {:fname "NO-NAME"}}
+                                wrapper jetty-async-fn ds)]
+        (is (= res exp))))
+
+    (testing "If the search parameters are not set, the correct error is returned"
+      (let [exp {:body {:msg "Patient not found"} :headers {} :status 404}
+            res (sut/app-routes {:uri            "/api/search"
+                                 :request-method :get
+                                 :params         {}}
+                                wrapper jetty-async-fn ds)]
+        (is (= res exp))))
+
+    (testing "If the patient matches the search condition then it is returned correctly"
+      (let [res (sut/app-routes {:uri            "/api/search"
+                                 :request-method :get
+                                 :params         {:fname "Sam"}}
+                                wrapper jetty-async-fn ds)
+
+            exp {:body    [#:patient{:address          "160 Broadway"
+                                     :birth_date       #inst "2022-08-04T09:33:02.545944000-00:00"
+                                     :created_at       inst?
+                                     :fname            "Sam"
+                                     :gender           "FEMALE"
+                                     :id               #uuid "692f57f9-0b01-47df-b928-46ce92b8ea83"
+                                     :insurance_policy "9876543"
+                                     :lname            "Smith"
+                                     :mname            "Alice"
+                                     :updated_at       inst?}]
+                 :headers {}
+                 :status  200}]
+        (is (match res exp))))))
+
+
+(deftest list-patient-test
+  (let [ds             test.fixtures/ds
+        jetty-async-fn (constantly nil)
+        wrapper        (fn [x] x)]
+
+    (testing "If the list of patients is empty the correct error is returned"
+      (with-redefs [db/list-all (constantly nil)]
+        (let [exp {:body {:error/msg "Patients not-found"} :headers {} :status 404}
+              res (sut/app-routes {:uri "/api/patient" :request-method :get} wrapper jetty-async-fn ds)]
+          (is (= res exp)))))
+
+    (testing "If there are patients in the database the list is returned correctly"
+      (let [res (sut/app-routes {:uri "/api/patient" :request-method :get} wrapper jetty-async-fn ds)
+            exp {:body    [#:patient{:address          "61 9th Ave"
+                                     :birth_date       #inst "2022-08-04T09:33:02.545944000-00:00"
+                                     :created_at       inst?
+                                     :fname            "James"
+                                     :gender           "MALE"
+                                     :id               #uuid "692f57f9-0b01-47df-b928-46ce92b8ea82"
+                                     :insurance_policy "123143141"
+                                     :lname            "Greeen"
+                                     :mname            "Alice"
+                                     :updated_at       inst?}
+                           #:patient{:address          "160 Broadway"
+                                     :birth_date       #inst "2022-08-04T09:33:02.545944000-00:00"
+                                     :created_at       inst?
+                                     :fname            "Sam"
+                                     :gender           "FEMALE"
+                                     :id               #uuid "692f57f9-0b01-47df-b928-46ce92b8ea83"
+                                     :insurance_policy "9876543"
+                                     :lname            "Smith"
+                                     :mname            "Alice"
+                                     :updated_at       inst?}]
+                 :headers {}
+                 :status  200}]
+        (is (match res exp))))))
