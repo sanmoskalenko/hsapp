@@ -18,6 +18,8 @@
 
  :builds       {:app {:target     :browser
                       :output-dir "resources/public/js/compiled/js"
+                      :js-options {:resolve {"highlight.js" {:target :npm :require "highlight.js/lib/core"}
+                                             "lowlight"     {:target :npm :require "lowlight/lib/core"}}}
                       :asset-path "/js/compiled"
                       :modules    {:app {:init-fn ui.health.core/init}}
                       :devtools   {:preloads [devtools.preload
