@@ -88,12 +88,12 @@
    (let [{:keys [uri request-method]} request]
      (case [request-method uri]
        [:get "/"] (-> home-page wrapper)
-       [:get "/api/patient"] (-> (list-patient ds) wrapper)
-       [:get "/api/search"] (-> (search-patient ds request) wrapper)
-       [:put "/api/patient"] (-> (update-patient ds request) wrapper)
-       [:post "/api/patient"] (-> (create-patient ds request) wrapper)
-       [:delete "/api/patient"] (-> (delete-patient ds request) wrapper)
-       (-> (response/not-found) wrapper)))))
+       [:get "/api/patient"] (wrapper (list-patient ds) )
+       [:get "/api/search"] (wrapper (search-patient ds request))
+       [:put "/api/patient"] (wrapper (update-patient ds request))
+       [:post "/api/patient"] (wrapper (create-patient ds request))
+       [:delete "/api/patient"] (wrapper (delete-patient ds request))
+       (wrapper (response/not-found))))))
 
 
 (def app
