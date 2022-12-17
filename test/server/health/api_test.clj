@@ -209,7 +209,7 @@
                                 wrapper jetty-async-fn ds)
 
             exp {:body    [#:patient{:address          "160 Broadway"
-                                     :birth_date       #inst "2022-08-04T09:33:02.545944000-00:00"
+                                     :birth_date       inst?
                                      :created_at       inst?
                                      :fname            "Sam"
                                      :gender           "FEMALE"
@@ -237,7 +237,7 @@
     (testing "If there are patients in the database the list is returned correctly"
       (let [res (sut/app-routes {:uri "/api/patient" :request-method :get} wrapper jetty-async-fn ds)
             exp {:body    [#:patient{:address          "61 9th Ave"
-                                     :birth_date       #inst "2022-08-04T09:33:02.545944000-00:00"
+                                     :birth_date       inst?
                                      :created_at       inst?
                                      :fname            "James"
                                      :gender           "MALE"
@@ -247,7 +247,7 @@
                                      :mname            "Alice"
                                      :updated_at       inst?}
                            #:patient{:address          "160 Broadway"
-                                     :birth_date       #inst "2022-08-04T09:33:02.545944000-00:00"
+                                     :birth_date       inst?
                                      :created_at       inst?
                                      :fname            "Sam"
                                      :gender           "FEMALE"
