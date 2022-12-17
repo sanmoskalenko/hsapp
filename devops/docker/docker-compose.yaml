@@ -4,6 +4,7 @@ services:
   main-db:
     container_name: health_maindb
     image: postgres:latest
+    restart: 'always'
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:

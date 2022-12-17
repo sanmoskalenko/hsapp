@@ -89,7 +89,6 @@
 (defn start! []
   (let [_      (log/info {:msg "Start test-hsapp"})
         status (mount/start #'ctx #'ds)
-        _      (.addShutdownHook (Runtime/getRuntime) (Thread. stop!))
         _      (migrations-up)
         _      (log/info {:status status})]
     status))

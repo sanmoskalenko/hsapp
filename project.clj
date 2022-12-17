@@ -67,9 +67,5 @@
                        :jvm-opts     ["-Dclojure.compiler.direct-linking=true"]
                        :prep-tasks   ["compile" ["run" "-m" "shadow.cljs.devtools.cli" "release" "app"]]
                        :uberjar-name "hsapp.jar"}}
-  :test-selectors {:verbose (fn [m & _] (prn m) true)
-                   :default (complement :integration)
-                   :integration :integration
-                   :unit :unit}
 
   :repl-options {:init-ns server.health.core})
