@@ -9,7 +9,7 @@
 
                  [aero "1.1.6"]
 
-                 [matcho "0.1.0-RC6"]
+                 [healthsamurai/matcho "0.3.9"]
 
                  [compojure "1.6.3"]
                  [clj-unifier "0.0.15"]
