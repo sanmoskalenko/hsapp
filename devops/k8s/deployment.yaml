@@ -1,0 +1,66 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data: 
+  DATABASE_URL: "postgresql-service.default.svc.cluster.local"
+  DATABASE_PORT: "5432"
+  WEBSERVER_PORT: "3000"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+  namespace: default
+type: Opaque
+data:
+  USERNAME: aGVhbHRo
+  PASSWORD: aGVhbHRocHc=
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+  namespace: default
+spec:
+  ports:
+    - port: 8080
+      protocol: TCP
+  selector:
+    app: hsapp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hsapp
+  namespace: default
+  labels:
+    app: hsapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hsapp
+  template:
+    metadata:
+      labels:
+        app: hsapp
+    spec:
+      containers:
+        - name: application
+          image: sanmoskalenko/hsapp:latest
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secret
+          resources:
+            requests:
+              ephemeral-storage: "1Gi"
+            limits:
+              ephemeral-storage: "2Gi"  
+  

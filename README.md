@@ -1,20 +1,39 @@
 # hsapp
 
-Demo application written in Clojure.
+Demo app in Clojure.
 
 ## Usage
+To build the application in a jar, run the following command in the terminal:
 
-To start the application for the first time, you need to run the following command:
+    make jar
 
-    npm run start && lein run
+To start the application in docker, you need to run the following command:
+
+    make up
+
+To stop the application in docker you need to run the following command:
+
+    make down
+
+To run the application on a local kubernetes cluster, run the following command:
+
+    make kube-up 
+
+To stop the local kubernetes cluster, run the command: 
+
+    make kube-down
+
+To install dependencies, run the command:
+
+    make deps 
 
 ## Description
 
-Application after launch is available on `localhost:3000`
+With the default configuration, the application, after launch, is available on `localhost:3000`
 
 ## License
 
-Copyright © 2022 FIXME
+Copyright © 2022 sanmoskalenko
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at

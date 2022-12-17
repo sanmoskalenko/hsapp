@@ -32,6 +32,7 @@
 
 (comment
 
-  (-main)
+  (stop!)
+  (start!)
 
   )

@@ -1,6 +1,6 @@
 (ns server.health.api
   (:require
-    [compojure.core :refer :all]
+    [compojure.core]
     [ring.util.response :as util.response]
     [ring.adapter.jetty :refer [run-jetty]]
     [ring.util.http-response :as response]

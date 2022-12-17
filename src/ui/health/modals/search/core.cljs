@@ -8,8 +8,7 @@
     [syn-antd.modal :as modal]
     [ui.syn-antd-fixed.input :as input]
     [syn-antd.date-picker :as date-picker]
-    [syn-antd.select :as select]
-    [syn-antd.form :as form]))
+    [syn-antd.select :as select]))
 
 
 (defn- not-empty-fields

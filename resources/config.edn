@@ -1,4 +1,4 @@
-{:webserver {:port              3000
+{:webserver {:port              #or [#env WEBSERVER_PORT 3000]
              :join?             false
              :http?             true
              :max-idle-time     200000
@@ -10,10 +10,10 @@
 
  :main-db   {:dbtype     "postgresql"
              :dbname     "health_maindb"
-             :host       "127.0.0.1"
-             :port       5433
-             :user       "health"
-             :password   "healthpw"
+             :host       #or [#env DATABASE_URL "127.0.0.1"]
+             :port       #or [#env DATABASE_PORT 5432]
+             :user       #or [#env USERNAME "health"] 
+             :password   #or [#env PASSWORD "healthpw"]
              :ssl        false
              :sslfactory "org.postgresql.ssl.NonValidatingFactory"}
 
@@ -24,6 +24,5 @@
              :migration-table-name "health.schema_migrations"
              :db                   {:dbtype   "postgres"
                                     :dbname   "health_maindb"
-                                    :user     "health"
-                                    :password "healthpw"}}
- }
+                                    :user       #or [#env USERNAME "health"]
+                                    :password   #or [#env PASSWORD "healthpw"]}}}

@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  main-db:
+    container_name: health_maindb
+    image: postgres:latest
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgrespw
+    ports:
+      - "5432:5432"
+  app:
+    container_name: hsapp
+    image: sanmoskalenko/hsapp:latest
+    environment:
+      - DATABASE_URL="127.0.0.1"
+      - DATABASE_PORT=5432
+      - USERNAME=health
+      - PASSWORD=healthpw
+      - WEBSERVER_PORT=3000
+    ports:
+      - "3000:3000"

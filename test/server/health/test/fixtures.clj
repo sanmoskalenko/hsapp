@@ -1,15 +1,16 @@
 (ns server.health.test.fixtures
   (:require
-    [cprop.core :refer [load-config]]
-    [mount.core :refer [defstate]]
-    [next.jdbc :as jdbc]
-    [migratus.core :as migratus]
     [cambium.core :as log]
-    [mount.core :as mount]))
+    [clojure.java.io :as io]
+    [aero.core :refer [read-config]]
+    [migratus.core :as migratus]
+    [mount.core :refer [defstate]]
+    [mount.core :as mount]
+    [next.jdbc :as jdbc]))
 
 
 (defstate ctx :start
-  (load-config :resource "resources/test_config.edn"))
+  (read-config (io/file "test/resources/test_config.edn")))
 
 
 (defstate ds
@@ -21,6 +22,7 @@
   (mapv :schema_migrations/id
         (let [migrations-table (-> ctx :migrate :migration-table-name)]
           (jdbc/execute! ds [(format "select id from %s" migrations-table)]))))
+
 
 (defn get-data-migrations-list []
   (mapv :schema_data_migrations/id

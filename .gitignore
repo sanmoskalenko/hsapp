@@ -5,3 +5,14 @@
 .lein-repl-history
 hsapp.iml
 node_modules
+.nrepl-port
+install-clj-kondo
+package-lock.json
+.calva
+.clj-kondo
+.lsp
+.shadow-cljs
+log
+resources/public/js
+.lein-failures
+.env

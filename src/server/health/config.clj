@@ -1,7 +1,8 @@
 (ns server.health.config
   (:require
-    [cprop.core :refer [load-config]]
+    [clojure.java.io :as io]
+    [aero.core :refer [read-config]]
     [mount.core :refer [defstate]]))
 
 (defstate ctx :start
-  (load-config))
+  (read-config (io/resource "config.edn")))

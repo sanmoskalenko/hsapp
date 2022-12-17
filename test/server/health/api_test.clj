@@ -1,10 +1,10 @@
 (ns server.health.api-test
   (:require
-    [clojure.test :refer [is use-fixtures deftest testing]]
-    [server.health.api :as sut]
-    [server.health.test.fixtures :as test.fixtures]
+    [clojure.test :refer [deftest is testing use-fixtures]]
     [matcho.core :refer [match]]
-    [server.health.patient.db :as db]))
+    [server.health.api :as sut]
+    [server.health.patient.db :as db]
+    [server.health.test.fixtures :as test.fixtures]))
 
 
 (use-fixtures
@@ -28,28 +28,28 @@
         wrapper        (fn [x] x)]
 
     (testing "Request with data to create an patient is processed correctly"
-      (let [res     (sut/app-routes {:uri            "/api/patient"
-                                                :request-method :post
-                                                :body-params    {:fname            "Roy"
-                                                                 :mname            "Philip"
-                                                                 :lname            "Jones"
-                                                                 :address          "61 9th Ave Street"
-                                                                 :gender           "MALE"
-                                                                 :insurance-policy "AA-364-2319"
-                                                                 :birth-date       "2022-07-23T21:00:00.000-00:00"}}
-                                               wrapper jetty-async-fn ds)
+      (let [res (sut/app-routes {:uri            "/api/patient"
+                                 :request-method :post
+                                 :body-params    {:fname            "Roy"
+                                                  :mname            "Philip"
+                                                  :lname            "Jones"
+                                                  :address          "61 9th Ave Street"
+                                                  :gender           "MALE"
+                                                  :insurance-policy "AA-364-2319"
+                                                  :birth-date       "2022-07-23T21:00:00.000-00:00"}}
+                                wrapper jetty-async-fn ds)
             exp {:body    [#:patient{:address          "61 9th Ave Street"
-                                                    :birth_date       #inst "2022-07-23T21:00:00.000-00:00"
-                                                    :created_at       (-> res :body first :patient/created_at)
-                                                    :fname            "Roy"
-                                                    :gender           "MALE"
-                                                    :id               (-> res :body first :patient/id)
-                                                    :insurance_policy "AA-364-2319"
-                                                    :lname            "Jones"
-                                                    :mname            "Philip"
-                                                    :updated_at       (-> res :body first :patient/updated_at)}]
-                                :headers {}
-                                :status  200}]
+                                     :birth_date       #inst "2022-07-23T21:00:00.000-00:00"
+                                     :created_at       (-> res :body first :patient/created_at)
+                                     :fname            "Roy"
+                                     :gender           "MALE"
+                                     :id               (-> res :body first :patient/id)
+                                     :insurance_policy "AA-364-2319"
+                                     :lname            "Jones"
+                                     :mname            "Philip"
+                                     :updated_at       (-> res :body first :patient/updated_at)}]
+                 :headers {}
+                 :status  200}]
         (is (match res exp))))
 
     (testing "It is not possible to create a user without the required fields filled in"
@@ -111,38 +111,38 @@
         (is (= res exp))))
 
     (testing "If an empty field is passed, then the update is not possible"
-      (let [exp     {:body    #:error{:msg "Required fields must not be empty"}
-                     :headers {}
-                     :status  404}
-            res     (sut/app-routes {:uri            "/api/patient"
-                                     :request-method :put
-                                     :body-params    {:id               "692f57f9-0b01-47df-b928-46ce92b8ea83"
-                                                      :fname            nil
-                                                      :gender           "MALE"
-                                                      :insurance-policy 987654321}}
-                                    wrapper jetty-async-fn ds)]
+      (let [exp {:body    #:error{:msg "Required fields must not be empty"}
+                 :headers {}
+                 :status  404}
+            res (sut/app-routes {:uri            "/api/patient"
+                                 :request-method :put
+                                 :body-params    {:id               "692f57f9-0b01-47df-b928-46ce92b8ea83"
+                                                  :fname            nil
+                                                  :gender           "MALE"
+                                                  :insurance-policy 987654321}}
+                                wrapper jetty-async-fn ds)]
         (is (= res exp))))
 
     (testing "If the request is correct, the update occurs correctly"
-      (let [exp     {:body    [#:patient{:address          "160 Broadway"
-                                         :birth_date       inst?
-                                         :created_at       inst?
-                                         :fname            "TEST_NAME"
-                                         :gender           "MALE"
-                                         :id               #uuid "692f57f9-0b01-47df-b928-46ce92b8ea83"
-                                         :insurance_policy "987654321"
-                                         :lname            "Smith"
-                                         :mname            "Alice"
-                                         :updated_at       inst?}]
-                     :headers {}
-                     :status  200}
-            res     (sut/app-routes {:uri            "/api/patient"
-                                     :request-method :put
-                                     :body-params    {:id               "692f57f9-0b01-47df-b928-46ce92b8ea83"
-                                                      :fname            "TEST_NAME"
-                                                      :gender           "MALE"
-                                                      :insurance-policy 987654321}}
-                                    wrapper jetty-async-fn ds)]
+      (let [exp {:body    [#:patient{:address          "160 Broadway"
+                                     :birth_date       inst?
+                                     :created_at       inst?
+                                     :fname            "TEST_NAME"
+                                     :gender           "MALE"
+                                     :id               #uuid "692f57f9-0b01-47df-b928-46ce92b8ea83"
+                                     :insurance_policy "987654321"
+                                     :lname            "Smith"
+                                     :mname            "Alice"
+                                     :updated_at       inst?}]
+                 :headers {}
+                 :status  200}
+            res (sut/app-routes {:uri            "/api/patient"
+                                 :request-method :put
+                                 :body-params    {:id               "692f57f9-0b01-47df-b928-46ce92b8ea83"
+                                                  :fname            "TEST_NAME"
+                                                  :gender           "MALE"
+                                                  :insurance-policy 987654321}}
+                                wrapper jetty-async-fn ds)]
         (is (match res exp))))))
 
 

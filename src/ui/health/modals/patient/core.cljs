@@ -2,14 +2,12 @@
   (:require
     [ui.health.lin :refer [<sub >evt]]
     [ui.health.modals.patient.subs :as subs]
-    [ui.health.formats :as formatter]
     [ui.health.events :as event]
     [syn-antd.form :as form]
     [syn-antd.button :as button]
     [syn-antd.modal :as modal]
     [ui.syn-antd-fixed.input :as input]
-    [syn-antd.select :as select]
-    [syn-antd.form :as form]))
+    [syn-antd.select :as select]))
 
 
 (defn on-finish-handler
