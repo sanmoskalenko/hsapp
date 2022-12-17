@@ -20,4 +20,4 @@ jobs:
     
     - name: buld 
       run: |
-        docker-compose up -d --build
+        cd devops/docer && docker-compose up -d --build
