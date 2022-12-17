@@ -1,4 +1,4 @@
-{:webserver {:port              #or [#env WEBSERVER_PORT 3000]
+{:webserver {:port              #long #or [#env WEBSERVER_PORT 3000]
              :join?             false
              :http?             true
              :max-idle-time     200000

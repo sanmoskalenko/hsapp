@@ -13,9 +13,12 @@ services:
       - "5432:5432"
   app:
     container_name: hsapp
+    depends_on:
+      - main-db
+    restart: 'always'
     image: sanmoskalenko/hsapp:latest
     environment:
-      - DATABASE_URL="127.0.0.1"
+      - DATABASE_URL=main-db
       - DATABASE_PORT=5432
       - USERNAME=health
       - PASSWORD=healthpw

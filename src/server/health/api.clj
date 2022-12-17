@@ -87,8 +87,8 @@
   ([request wrapper _ ds]
    (let [{:keys [uri request-method]} request]
      (case [request-method uri]
-       [:get "/"] (-> home-page wrapper)
-       [:get "/api/patient"] (wrapper (list-patient ds) )
+       [:get "/"] (wrapper home-page)
+       [:get "/api/patient"] (wrapper (list-patient ds))
        [:get "/api/search"] (wrapper (search-patient ds request))
        [:put "/api/patient"] (wrapper (update-patient ds request))
        [:post "/api/patient"] (wrapper (create-patient ds request))
