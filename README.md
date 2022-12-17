@@ -1,29 +1,31 @@
+![Clojure CI](https://github.com/sanmoskalenko/hsapp/workflows/Clojure%20CI/badge.svg)
+
 # hsapp
 
 Demo app in Clojure.
 
 ## Usage
-To build the application in a jar, run the following command in the terminal:
+To build the application in a jar:
 
     make jar
 
-To start the application in docker, you need to run the following command:
+To start the application in docker:
 
     make up
 
-To stop the application in docker you need to run the following command:
+To stop the application in docker:
 
     make down
 
-To run the application on a local kubernetes cluster, run the following command:
+To run the application on a local kubernetes cluster:
 
     make kube-up 
 
-To stop the local kubernetes cluster, run the command: 
+To stop the local kubernetes cluster: 
 
     make kube-down
 
-To install dependencies, run the command:
+To install dependencies:
 
     make deps 
 
