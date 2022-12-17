@@ -18,6 +18,10 @@ jobs:
     - name: Run unit tests
       run: lein test server.health.patient.api.v1-test
     
-    - name: buld 
+    - name: build 
       run: |
         cd devops/docker && docker-compose up -d --build
+
+    - name: Run all tests  
+      run: | 
+        cd devops/docker && docker-compose run app lein test 
