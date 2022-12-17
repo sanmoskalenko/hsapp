@@ -23,5 +23,4 @@ jobs:
         cd devops/docker && docker-compose up -d --build
 
     - name: Run all tests  
-      run: | 
-        cd devops/docker && docker-compose run app lein test 
+      run: lein test
