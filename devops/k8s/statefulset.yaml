@@ -12,16 +12,30 @@ spec:
     app: postgresql
 ---
 apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+  namespace: default
+type: Opaque
+data:
+  USERNAME: aGVhbHRo
+  PASSWORD: aGVhbHRocHc=
+  POSTGRES_USER: cG9zdGdyZXM=
+  POSTGRES_PASSWORD: cG9zdGdyZXNwdw==
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: postgresql-initdb-config
 data:
-  init.sql: |
-    CREATE ROLE health SUPERUSER CREATEDB CREATEROLE NOINHERIT LOGIN NOREPLICATION NOBYPASSRLS PASSWORD 'healthpw';
+  init.sh: |
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" -w  <<-EOSQL
+    CREATE ROLE "$USERNAME" SUPERUSER CREATEDB CREATEROLE NOINHERIT LOGIN NOREPLICATION NOBYPASSRLS PASSWORD '$PASSWORD';
     CREATE DATABASE health_maindb;
-    GRANT ALL PRIVILEGES ON DATABASE health_maindb TO health;
+    GRANT ALL PRIVILEGES ON DATABASE health_maindb TO "$USERNAME";
     CREATE DATABASE health_testdb;
-    GRANT ALL PRIVILEGES ON DATABASE health_testdb TO health;
+    GRANT ALL PRIVILEGES ON DATABASE health_testdb TO "$USERNAME";
+    EOSQL
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -48,17 +62,16 @@ spec:
       containers:
         - name: postgresql
           image: postgres:latest
-          env:
-            - name: POSTGRES_PASSWORD
-              value: postgrespw
-            - name: POSTGRES_USER
-              value: postgres
+          envFrom:
+            - secretRef:
+                name: db-secret
           ports:
             - containerPort: 5432
-              protocol: TCP     
+              protocol: TCP
           volumeMounts:
-              - name: init-script
-                mountPath: /docker-entrypoint-initdb.d        
+          - mountPath: /docker-entrypoint-initdb.d  
+            name: init-script
+            readOnly: true
   volumeClaimTemplates:
   - metadata:
       name: postgresql-pvclaim
