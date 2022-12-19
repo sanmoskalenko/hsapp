@@ -5,7 +5,6 @@
 Demo application for working with patients on the stack `Clojure/ClojureScript + PostgreSQL`. The application implements the following patient logic:
 * browsing;
 * search;
-* filtering;
 * creation;
 * deletion;
 
@@ -19,7 +18,7 @@ With the default configuration, the application is accessible on `localhost:3000
 
 To install dependencies (make sure you have homebrew installed before starting):
 
-> Attention! If you already have `clojure/lein/node/kubectl/kind`installed, the packages will be updated
+> Attention! If you already have `clojure/lein/node/kubectl/kind` installed, the packages will be updated
 
     make deps 
 
