@@ -17,9 +17,9 @@ With the default configuration, the application is accessible on `localhost:3000
 
 #### Make sure you have `Docker` installed and running before using.
 
-> Attention! If you already have `clojure/lein/node/kubectl/kind`installed, the packages will be updated
-
 To install dependencies (make sure you have homebrew installed before starting):
+
+> Attention! If you already have `clojure/lein/node/kubectl/kind`installed, the packages will be updated
 
     make deps 
 
