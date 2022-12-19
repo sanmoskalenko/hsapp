@@ -17,4 +17,7 @@ jar:
 #	docker build --pull --rm -f "Dockerfile" -t sanmoskalenko/hsapp:latest "." && docker push sanmoskalenko/hsapp:latest
 
 deps:
-	npm run install
+	brew install clojure/tools/clojure && brew install leiningen && brew install kubectl && brew install kind && brew install node && lein deps && npm run install
+
+prj-deps:
+	lein deps && npm run install

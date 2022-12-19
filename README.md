@@ -2,9 +2,31 @@
 
 # hsapp
 
-Demo app in Clojure.
+Demo application for working with patients on the stack `Clojure/ClojureScript + PostgreSQL`. The application implements the following patient logic:
+* browsing;
+* search;
+* filtering;
+* creation;
+* deletion;
+
+For the user interface, the application uses the [Ant.Design](https://ant.design/) component library.
+
+With the default configuration, the application is accessible on `localhost:3000` after startup.
 
 ## Usage
+
+#### Make sure you have `Docker` installed and running before using.
+
+> Attention! If you already have `clojure/lein/node/kubectl/kind`installed, the packages will be updated
+
+To install dependencies (make sure you have homebrew installed before starting):
+
+    make deps 
+
+Install project-only dependencies (node_modules & lein deps): 
+
+    make prj-deps
+
 To build the application in a jar:
 
     make jar
@@ -24,14 +46,6 @@ To run the application on a local kubernetes cluster:
 To stop the local kubernetes cluster: 
 
     make kube-down
-
-To install dependencies:
-
-    make deps 
-
-## Description
-
-With the default configuration, the application, after launch, is available on `localhost:3000`
 
 ## License
 
