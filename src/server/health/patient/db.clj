@@ -2,10 +2,7 @@
   (:require
     [honeysql.core :as sql]
     [honeysql.helpers :as hsql]
-    [server.health.dao.pg :as db])
-  (:import
-    (java.util
-      UUID)))
+    [server.health.dao.pg :as db]))
 
 (defn- prepare-where-for-search-patient
   "Prepares the condition for filtering
@@ -48,7 +45,7 @@
 
 (defn create-patient
   [ds value]
-  (let [patient-id (UUID/randomUUID)
+  (let [patient-id (random-uuid)
         value*     (assoc value :patient/id patient-id)
         query      (-> {:insert-into :health.patient
                         :values      [value*]}

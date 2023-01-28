@@ -14,8 +14,11 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install dependencies
       run: lein deps
+
+    - name: Run lint
+      run: clj -Sdeps '{:deps {clj-kondo/clj-kondo {:mvn/version "RELEASE"}}}' -m clj-kondo.main --lint src --fail-level error --parallel
     
-    - name: build 
+    - name: Build
       run: |
         cd devops/docker && docker-compose up -d --build
 

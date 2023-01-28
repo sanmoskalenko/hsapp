@@ -21,3 +21,6 @@ deps:
 
 prj-deps:
 	lein deps && npm run install
+
+lint:
+	clj -Sdeps '{:deps {clj-kondo/clj-kondo {:mvn/version "RELEASE"}}}' -m clj-kondo.main --lint src --fail-level error --parallel

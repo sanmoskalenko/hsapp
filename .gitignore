@@ -9,7 +9,10 @@ node_modules
 install-clj-kondo
 package-lock.json
 .calva
-.clj-kondo
+.clj-kondo/.cache
+.clj-kondo/babashka
+.clj-kondo/com.github.seancorfield
+.clj-kondo/rewrite-clj
 .lsp
 .shadow-cljs
 log

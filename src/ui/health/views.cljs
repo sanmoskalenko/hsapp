@@ -1,7 +1,7 @@
 (ns ui.health.views
   (:require
     [reagent.core :as r]
-    [ui.health.lin :refer [<sub >evt sub]]
+    [ui.health.lin :refer [<sub >evt]]
     [ui.health.events :as events]
     [ui.health.subs :as subs]
     [syn-antd.button :as button]

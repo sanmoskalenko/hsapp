@@ -94,7 +94,7 @@
         (log/info {:msg (format "Patient with id %s not found" patient-id)})
         (r/as-not-found {:error/msg (format "Patient with id %s not found" patient-id)}))
 
-      (not (empty? (empty-required-fields req-data)))
+      (seq (empty-required-fields req-data))
       (do (log/error {:msg "Required fields must not be empty"})
           (r/as-incorrect {:error/msg "Required fields must not be empty"}))
 
